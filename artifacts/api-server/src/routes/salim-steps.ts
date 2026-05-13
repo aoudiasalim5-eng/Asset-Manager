@@ -258,6 +258,32 @@ router.delete("/milestones/:id", requireAuth, async (req, res): Promise<void> =>
   res.sendStatus(204);
 });
 
+// ─── I – IMPLEMENT ───────────────────────────────────────────────────────────
+
+router.put("/objectives/:id/implement", requireAuth, async (req, res): Promise<void> => {
+  const objectiveId = parseId(req.params.id);
+  if (!(await assertObjectiveOwner(objectiveId, req.auth!.userId))) {
+    res.status(404).json({ error: "Objective not found" });
+    return;
+  }
+  await updateObjectiveStep(objectiveId, "implement");
+  const [obj] = await db.select().from(objectivesTable).where(eq(objectivesTable.id, objectiveId));
+  res.json(obj);
+});
+
+// ─── M – MAINTAIN ─────────────────────────────────────────────────────────────
+
+router.put("/objectives/:id/maintain", requireAuth, async (req, res): Promise<void> => {
+  const objectiveId = parseId(req.params.id);
+  if (!(await assertObjectiveOwner(objectiveId, req.auth!.userId))) {
+    res.status(404).json({ error: "Objective not found" });
+    return;
+  }
+  await updateObjectiveStep(objectiveId, "maintain");
+  const [obj] = await db.select().from(objectivesTable).where(eq(objectivesTable.id, objectiveId));
+  res.json(obj);
+});
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
 const STEP_ORDER = ["specify", "align", "layout", "implement", "maintain"];
@@ -276,11 +302,17 @@ async function updateObjectiveStep(objectiveId: number, completedStep: string): 
     nextStep = STEP_ORDER[completedIndex + 1];
   }
 
+  const isFinished = completed.size === STEP_ORDER.length;
   const progressPercent = Math.round((completed.size / STEP_ORDER.length) * 100);
 
   await db
     .update(objectivesTable)
-    .set({ completedSteps: Array.from(completed), currentStep: nextStep, progressPercent })
+    .set({
+      completedSteps: Array.from(completed),
+      currentStep: nextStep,
+      progressPercent,
+      status: isFinished ? "completed" : obj.status,
+    })
     .where(eq(objectivesTable.id, objectiveId));
 }
 

@@ -284,7 +284,7 @@ export default function Onboarding() {
                   data-testid="checkbox-agreement"
                 />
                 <span className="text-sm">
-                  Je comprends et j'accepte. Je suis prêt à m'engager pleinement dans ce processus de transformation.
+                  I commit to showing up, even when motivation fades.
                 </span>
               </label>
 

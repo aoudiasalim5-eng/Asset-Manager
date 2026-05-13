@@ -14,6 +14,7 @@ import Objectives from "@/pages/objectives";
 import SpecifyPage from "@/pages/specify";
 import AlignPage from "@/pages/align";
 import LayoutPage from "@/pages/layout";
+import CompletionPage from "@/pages/completion";
 import Tasks from "@/pages/tasks";
 import Habits from "@/pages/habits";
 import Reviews from "@/pages/reviews";
@@ -74,6 +75,9 @@ function Router() {
       </Route>
       <Route path="/layout/:id">
         <ProtectedRoute component={LayoutPage} />
+      </Route>
+      <Route path="/completion/:id">
+        <ProtectedRoute component={CompletionPage} />
       </Route>
       <Route path="/tasks">
         <ProtectedRoute component={Tasks} />
