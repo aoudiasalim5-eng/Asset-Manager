@@ -9,11 +9,11 @@ import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Circle, ChevronRight, Plus } from "lucide-react";
 
 const STEPS = [
-  { key: "specify", label: "S — Specify", desc: "Clarify your goal with SMART precision" },
-  { key: "align", label: "A — Align", desc: "Connect to your values and deep why" },
-  { key: "layout", label: "L — Lay Out", desc: "Build your 90-day plan" },
-  { key: "implement", label: "I — Implement", desc: "Execute daily actions and reviews" },
-  { key: "maintain", label: "M — Maintain", desc: "Track habits and sustain momentum" },
+  { key: "specify", label: "S — Specify", desc: "Clarifier l'objectif avec précision SMART" },
+  { key: "align", label: "A — Align", desc: "Donner du sens — Pourquoi, valeurs, visualisation" },
+  { key: "layout", label: "L — Lay Out", desc: "Structurer un plan en 90 jours" },
+  { key: "implement", label: "I — Implement", desc: "Actions quotidiennes et revues hebdomadaires" },
+  { key: "maintain", label: "M — Maintain", desc: "Habitudes, constance et progression" },
 ];
 
 const STEP_ROUTES: Record<string, (id: number) => string> = {
@@ -43,11 +43,11 @@ export default function ObjectivePage() {
     return (
       <AppLayout>
         <div className="max-w-2xl mx-auto text-center py-20">
-          <p className="text-muted-foreground mb-4">No active objective found.</p>
+          <p className="text-muted-foreground mb-4">Aucun objectif actif trouvé.</p>
           <Button asChild>
             <Link href="/objectives">
               <Plus className="w-4 h-4 mr-2" />
-              Create an objective
+              Créer un objectif
             </Link>
           </Button>
         </div>
@@ -62,7 +62,7 @@ export default function ObjectivePage() {
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">Active</span>
+            <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">Actif</span>
           </div>
           <h1 className="text-2xl font-serif font-bold mb-2">{objective.title}</h1>
           {objective.description && (
@@ -70,7 +70,7 @@ export default function ObjectivePage() {
           )}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
-              <span>Overall progress</span>
+              <span>Progression globale</span>
               <span>{objective.progressPercent}%</span>
             </div>
             <Progress value={objective.progressPercent} className="h-2" />
@@ -108,7 +108,7 @@ export default function ObjectivePage() {
                     <p className={`font-medium ${isCurrent ? "text-primary" : ""}`}>{step.label}</p>
                     {isCurrent && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-primary text-primary-foreground">
-                        Current
+                        En cours
                       </span>
                     )}
                   </div>
@@ -118,7 +118,7 @@ export default function ObjectivePage() {
                 {route && (isCurrent || completed) && (
                   <Link href={route}>
                     <Button size="sm" variant={isCurrent ? "default" : "outline"} data-testid={`button-step-${step.key}`}>
-                      {completed ? "Review" : "Continue"}
+                      {completed ? "Revoir" : "Continuer"}
                       <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>
                   </Link>
@@ -130,7 +130,7 @@ export default function ObjectivePage() {
 
         <div className="mt-6 text-center">
           <Link href="/objectives" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            View all objectives
+            Voir tous les objectifs
           </Link>
         </div>
       </div>

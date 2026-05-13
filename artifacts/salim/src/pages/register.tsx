@@ -18,7 +18,7 @@ export default function Register() {
     mutation: {
       onSuccess: (data) => {
         login(data.token, data.user);
-        setLocation("/dashboard");
+        setLocation("/onboarding");
       },
       onError: (err: any) => {
         const msg = err?.data?.error ?? "Registration failed. Please try again.";

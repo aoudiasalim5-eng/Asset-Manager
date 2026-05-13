@@ -7,9 +7,13 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
+import Onboarding from "@/pages/onboarding";
 import Dashboard from "@/pages/dashboard";
 import ObjectivePage from "@/pages/objective";
 import Objectives from "@/pages/objectives";
+import SpecifyPage from "@/pages/specify";
+import AlignPage from "@/pages/align";
+import LayoutPage from "@/pages/layout";
 import Tasks from "@/pages/tasks";
 import Habits from "@/pages/habits";
 import Reviews from "@/pages/reviews";
@@ -18,28 +22,24 @@ import Settings from "@/pages/settings";
 
 const queryClient = new QueryClient();
 
+function Loader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { isAuthenticated, isLoading } = useAuth();
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (isLoading) return <Loader />;
   if (!isAuthenticated) return <Redirect to="/login" />;
   return <Component />;
 }
 
 function PublicOnlyRoute({ component: Component }: { component: React.ComponentType }) {
   const { isAuthenticated, isLoading } = useAuth();
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (isLoading) return <Loader />;
   if (isAuthenticated) return <Redirect to="/dashboard" />;
   return <Component />;
 }
@@ -54,6 +54,9 @@ function Router() {
       <Route path="/register">
         <PublicOnlyRoute component={Register} />
       </Route>
+      <Route path="/onboarding">
+        <ProtectedRoute component={Onboarding} />
+      </Route>
       <Route path="/dashboard">
         <ProtectedRoute component={Dashboard} />
       </Route>
@@ -62,6 +65,15 @@ function Router() {
       </Route>
       <Route path="/objectives">
         <ProtectedRoute component={Objectives} />
+      </Route>
+      <Route path="/specify/:id">
+        <ProtectedRoute component={SpecifyPage} />
+      </Route>
+      <Route path="/align/:id">
+        <ProtectedRoute component={AlignPage} />
+      </Route>
+      <Route path="/layout/:id">
+        <ProtectedRoute component={LayoutPage} />
       </Route>
       <Route path="/tasks">
         <ProtectedRoute component={Tasks} />
