@@ -3,20 +3,42 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: S.A.L.I.M. Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: users
+    description: User profile
+  - name: objectives
+    description: S.A.L.I.M. objectives
+  - name: specify
+    description: S – Specify step
+  - name: align
+    description: A – Align step
+  - name: layout
+    description: L – Lay out step (90-day plan)
+  - name: tasks
+    description: I – Implement step (daily tasks)
+  - name: reviews
+    description: I – Implement step (weekly reviews)
+  - name: habits
+    description: M – Maintain step (habits)
+  - name: journal
+    description: Progress journal
+  - name: dashboard
+    description: Dashboard & analytics
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +46,761 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── AUTH ───────────────────────────────────────────────
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ─── USERS ──────────────────────────────────────────────
+  /users/profile:
+    patch:
+      operationId: updateProfile
+      tags: [users]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # ─── OBJECTIVES ─────────────────────────────────────────
+  /objectives:
+    get:
+      operationId: listObjectives
+      tags: [objectives]
+      summary: List all objectives for current user
+      responses:
+        "200":
+          description: List of objectives
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Objective"
+    post:
+      operationId: createObjective
+      tags: [objectives]
+      summary: Create a new objective
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectiveInput"
+      responses:
+        "201":
+          description: Created objective
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Objective"
+
+  /objectives/active:
+    get:
+      operationId: getActiveObjective
+      tags: [objectives]
+      summary: Get the current active objective
+      responses:
+        "200":
+          description: Active objective with full S.A.L.I.M. progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObjectiveDetail"
+        "404":
+          description: No active objective
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /objectives/{id}:
+    get:
+      operationId: getObjective
+      tags: [objectives]
+      summary: Get objective by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Objective
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObjectiveDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateObjective
+      tags: [objectives]
+      summary: Update an objective
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectiveUpdate"
+      responses:
+        "200":
+          description: Updated objective
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Objective"
+
+  /objectives/{id}/activate:
+    post:
+      operationId: activateObjective
+      tags: [objectives]
+      summary: Set objective as active (archives others)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Activated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Objective"
+
+  # ─── S – SPECIFY ────────────────────────────────────────
+  /objectives/{id}/specify:
+    get:
+      operationId: getSpecify
+      tags: [specify]
+      summary: Get Specify data for an objective
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Specify data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpecifyData"
+    put:
+      operationId: saveSpecify
+      tags: [specify]
+      summary: Save Specify step data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecifyInput"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpecifyData"
+
+  # ─── A – ALIGN ──────────────────────────────────────────
+  /objectives/{id}/align:
+    get:
+      operationId: getAlign
+      tags: [align]
+      summary: Get Align data for an objective
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Align data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlignData"
+    put:
+      operationId: saveAlign
+      tags: [align]
+      summary: Save Align step data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlignInput"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlignData"
+
+  # ─── L – LAY OUT ────────────────────────────────────────
+  /objectives/{id}/plan:
+    get:
+      operationId: getPlan
+      tags: [layout]
+      summary: Get the 90-day plan for an objective
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Plan with milestones
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+    put:
+      operationId: savePlan
+      tags: [layout]
+      summary: Save the 90-day plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanInput"
+      responses:
+        "200":
+          description: Saved plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+
+  /objectives/{id}/plan/milestones:
+    post:
+      operationId: createMilestone
+      tags: [layout]
+      summary: Add a milestone to the plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MilestoneInput"
+      responses:
+        "201":
+          description: Created milestone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Milestone"
+
+  /milestones/{id}:
+    patch:
+      operationId: updateMilestone
+      tags: [layout]
+      summary: Update a milestone
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MilestoneUpdate"
+      responses:
+        "200":
+          description: Updated milestone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Milestone"
+    delete:
+      operationId: deleteMilestone
+      tags: [layout]
+      summary: Delete a milestone
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── I – IMPLEMENT (TASKS) ──────────────────────────────
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List tasks (optionally filtered by date)
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: ["string", "null"]
+          description: ISO date string (YYYY-MM-DD) to filter tasks for a specific day
+        - name: objectiveId
+          in: query
+          schema:
+            type: ["integer", "null"]
+          description: Filter by objective
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a new daily task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Created task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    patch:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /tasks/{id}/complete:
+    post:
+      operationId: completeTask
+      tags: [tasks]
+      summary: Mark a task as complete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  # ─── I – IMPLEMENT (WEEKLY REVIEWS) ─────────────────────
+  /reviews:
+    get:
+      operationId: listReviews
+      tags: [reviews]
+      summary: List weekly reviews
+      responses:
+        "200":
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeeklyReview"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Create or update a weekly review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Created review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeeklyReview"
+
+  /reviews/{id}:
+    patch:
+      operationId: updateReview
+      tags: [reviews]
+      summary: Update a weekly review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeeklyReview"
+
+  # ─── M – MAINTAIN (HABITS) ──────────────────────────────
+  /habits:
+    get:
+      operationId: listHabits
+      tags: [habits]
+      summary: List habits for current user
+      responses:
+        "200":
+          description: List of habits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Habit"
+    post:
+      operationId: createHabit
+      tags: [habits]
+      summary: Create a new habit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HabitInput"
+      responses:
+        "201":
+          description: Created habit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Habit"
+
+  /habits/{id}:
+    patch:
+      operationId: updateHabit
+      tags: [habits]
+      summary: Update a habit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HabitUpdate"
+      responses:
+        "200":
+          description: Updated habit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Habit"
+    delete:
+      operationId: deleteHabit
+      tags: [habits]
+      summary: Delete a habit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /habits/{id}/check:
+    post:
+      operationId: checkHabit
+      tags: [habits]
+      summary: Log a habit completion for today
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Checked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HabitLog"
+
+  # ─── JOURNAL ────────────────────────────────────────────
+  /journal:
+    get:
+      operationId: listJournalEntries
+      tags: [journal]
+      summary: List journal entries
+      responses:
+        "200":
+          description: List of entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JournalEntry"
+    post:
+      operationId: createJournalEntry
+      tags: [journal]
+      summary: Create a journal entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JournalInput"
+      responses:
+        "201":
+          description: Created entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+
+  /journal/{id}:
+    patch:
+      operationId: updateJournalEntry
+      tags: [journal]
+      summary: Update a journal entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JournalUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+    delete:
+      operationId: deleteJournalEntry
+      tags: [journal]
+      summary: Delete a journal entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── DASHBOARD ──────────────────────────────────────────
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Summary statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/progress:
+    get:
+      operationId: getProgressOverview
+      tags: [dashboard]
+      summary: Get weekly progress data for the active objective
+      responses:
+        "200":
+          description: Progress overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProgressOverview"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +811,680 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    # ─── AUTH ──────────────────────────────────────────────
+    RegisterInput:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+          minLength: 1
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, email, name, plan, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        plan:
+          type: string
+          enum: [free, premium]
+        mission:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    ProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        mission:
+          type: string
+        avatarUrl:
+          type: string
+
+    # ─── OBJECTIVES ────────────────────────────────────────
+    Objective:
+      type: object
+      required: [id, userId, title, status, currentStep, completedSteps, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, completed, archived]
+        currentStep:
+          type: string
+          enum: [specify, align, layout, implement, maintain]
+        completedSteps:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: ["string", "null"]
+          format: date
+        targetDate:
+          type: ["string", "null"]
+          format: date
+        progressPercent:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    ObjectiveDetail:
+      type: object
+      required: [id, userId, title, status, currentStep, completedSteps, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, completed, archived]
+        currentStep:
+          type: string
+          enum: [specify, align, layout, implement, maintain]
+        completedSteps:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: ["string", "null"]
+          format: date
+        targetDate:
+          type: ["string", "null"]
+          format: date
+        progressPercent:
+          type: integer
+        specify:
+          $ref: "#/components/schemas/SpecifyData"
+        align:
+          $ref: "#/components/schemas/AlignData"
+        plan:
+          $ref: "#/components/schemas/Plan"
+        createdAt:
+          type: string
+          format: date-time
+
+    ObjectiveInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date
+        targetDate:
+          type: string
+          format: date
+
+    ObjectiveUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, archived]
+        startDate:
+          type: string
+          format: date
+        targetDate:
+          type: string
+          format: date
+
+    # ─── SPECIFY ───────────────────────────────────────────
+    SpecifyData:
+      type: object
+      required: [id, objectiveId]
+      properties:
+        id:
+          type: integer
+        objectiveId:
+          type: integer
+        smartGoal:
+          type: ["string", "null"]
+        specificWhat:
+          type: ["string", "null"]
+        measurableHow:
+          type: ["string", "null"]
+        achievableSteps:
+          type: ["string", "null"]
+        relevantWhy:
+          type: ["string", "null"]
+        timeBoundWhen:
+          type: ["string", "null"]
+        precisionScore:
+          type: ["integer", "null"]
+        isValidated:
+          type: boolean
+
+    SpecifyInput:
+      type: object
+      properties:
+        smartGoal:
+          type: string
+        specificWhat:
+          type: string
+        measurableHow:
+          type: string
+        achievableSteps:
+          type: string
+        relevantWhy:
+          type: string
+        timeBoundWhen:
+          type: string
+        precisionScore:
+          type: integer
+        isValidated:
+          type: boolean
+
+    # ─── ALIGN ─────────────────────────────────────────────
+    AlignData:
+      type: object
+      required: [id, objectiveId]
+      properties:
+        id:
+          type: integer
+        objectiveId:
+          type: integer
+        deepWhy:
+          type: ["string", "null"]
+        values:
+          type: array
+          items:
+            type: string
+        visualizationNotes:
+          type: ["string", "null"]
+        alignmentScore:
+          type: ["integer", "null"]
+        isCompleted:
+          type: boolean
+
+    AlignInput:
+      type: object
+      properties:
+        deepWhy:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+        visualizationNotes:
+          type: string
+        alignmentScore:
+          type: integer
+        isCompleted:
+          type: boolean
+
+    # ─── PLAN (LAY OUT) ────────────────────────────────────
+    Plan:
+      type: object
+      required: [id, objectiveId, milestones]
+      properties:
+        id:
+          type: integer
+        objectiveId:
+          type: integer
+        summary:
+          type: ["string", "null"]
+        priorityFocus:
+          type: ["string", "null"]
+        milestones:
+          type: array
+          items:
+            $ref: "#/components/schemas/Milestone"
+
+    PlanInput:
+      type: object
+      properties:
+        summary:
+          type: string
+        priorityFocus:
+          type: string
+
+    Milestone:
+      type: object
+      required: [id, planId, title, weekNumber, isCompleted]
+      properties:
+        id:
+          type: integer
+        planId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        weekNumber:
+          type: integer
+        targetDate:
+          type: ["string", "null"]
+          format: date
+        isCompleted:
+          type: boolean
+        completedAt:
+          type: ["string", "null"]
+          format: date-time
+
+    MilestoneInput:
+      type: object
+      required: [title, weekNumber]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        weekNumber:
+          type: integer
+        targetDate:
+          type: string
+          format: date
+
+    MilestoneUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        weekNumber:
+          type: integer
+        targetDate:
+          type: string
+          format: date
+        isCompleted:
+          type: boolean
+
+    # ─── TASKS ─────────────────────────────────────────────
+    Task:
+      type: object
+      required: [id, userId, title, isCompleted, scheduledDate, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        objectiveId:
+          type: ["integer", "null"]
+        milestoneId:
+          type: ["integer", "null"]
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        isCompleted:
+          type: boolean
+        completedAt:
+          type: ["string", "null"]
+          format: date-time
+        scheduledDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    TaskInput:
+      type: object
+      required: [title, scheduledDate]
+      properties:
+        objectiveId:
+          type: integer
+        milestoneId:
+          type: integer
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]
+        scheduledDate:
+          type: string
+          format: date
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]
+        isCompleted:
+          type: boolean
+        scheduledDate:
+          type: string
+          format: date
+
+    # ─── WEEKLY REVIEWS ────────────────────────────────────
+    WeeklyReview:
+      type: object
+      required: [id, userId, weekNumber, weekStartDate, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        objectiveId:
+          type: ["integer", "null"]
+        weekNumber:
+          type: integer
+        weekStartDate:
+          type: string
+          format: date
+        wins:
+          type: ["string", "null"]
+        challenges:
+          type: ["string", "null"]
+        learnings:
+          type: ["string", "null"]
+        nextWeekFocus:
+          type: ["string", "null"]
+        energyScore:
+          type: ["integer", "null"]
+        progressScore:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    ReviewInput:
+      type: object
+      required: [weekNumber, weekStartDate]
+      properties:
+        objectiveId:
+          type: integer
+        weekNumber:
+          type: integer
+        weekStartDate:
+          type: string
+          format: date
+        wins:
+          type: string
+        challenges:
+          type: string
+        learnings:
+          type: string
+        nextWeekFocus:
+          type: string
+        energyScore:
+          type: integer
+        progressScore:
+          type: integer
+
+    ReviewUpdate:
+      type: object
+      properties:
+        wins:
+          type: string
+        challenges:
+          type: string
+        learnings:
+          type: string
+        nextWeekFocus:
+          type: string
+        energyScore:
+          type: integer
+        progressScore:
+          type: integer
+
+    # ─── HABITS ────────────────────────────────────────────
+    Habit:
+      type: object
+      required: [id, userId, title, frequency, currentStreak, longestStreak, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        objectiveId:
+          type: ["integer", "null"]
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        frequency:
+          type: string
+          enum: [daily, weekdays, weekly]
+        currentStreak:
+          type: integer
+        longestStreak:
+          type: integer
+        totalCompletions:
+          type: integer
+        isActive:
+          type: boolean
+        lastCheckedDate:
+          type: ["string", "null"]
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    HabitInput:
+      type: object
+      required: [title, frequency]
+      properties:
+        objectiveId:
+          type: integer
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        frequency:
+          type: string
+          enum: [daily, weekdays, weekly]
+
+    HabitUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        frequency:
+          type: string
+          enum: [daily, weekdays, weekly]
+        isActive:
+          type: boolean
+
+    HabitLog:
+      type: object
+      required: [id, habitId, date]
+      properties:
+        id:
+          type: integer
+        habitId:
+          type: integer
+        date:
+          type: string
+          format: date
+        completedAt:
+          type: string
+          format: date-time
+
+    # ─── JOURNAL ───────────────────────────────────────────
+    JournalEntry:
+      type: object
+      required: [id, userId, content, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        objectiveId:
+          type: ["integer", "null"]
+        title:
+          type: ["string", "null"]
+        content:
+          type: string
+        mood:
+          type: ["integer", "null"]
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    JournalInput:
+      type: object
+      required: [content]
+      properties:
+        objectiveId:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+          minLength: 1
+        mood:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+
+    JournalUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+          minLength: 1
+        mood:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+
+    # ─── DASHBOARD ─────────────────────────────────────────
+    DashboardSummary:
+      type: object
+      required: [tasksToday, tasksCompletedToday, activeHabits, habitsCheckedToday, currentStreak, journalEntriesTotal, activeObjective]
+      properties:
+        tasksToday:
+          type: integer
+        tasksCompletedToday:
+          type: integer
+        activeHabits:
+          type: integer
+        habitsCheckedToday:
+          type: integer
+        currentStreak:
+          type: integer
+        journalEntriesTotal:
+          type: integer
+        weeklyProgressScore:
+          type: ["integer", "null"]
+        activeObjective:
+          $ref: "#/components/schemas/Objective"
+
+    ProgressOverview:
+      type: object
+      required: [weeks]
+      properties:
+        objectiveId:
+          type: ["integer", "null"]
+        weeks:
+          type: array
+          items:
+            $ref: "#/components/schemas/WeekProgress"
+
+    WeekProgress:
+      type: object
+      required: [weekNumber, tasksCompleted, tasksTotal, habitsCompleted, habitsTotal]
+      properties:
+        weekNumber:
+          type: integer
+        weekLabel:
+          type: string
+        tasksCompleted:
+          type: integer
+        tasksTotal:
+          type: integer
+        habitsCompleted:
+          type: integer
+        habitsTotal:
+          type: integer
+        progressScore:
+          type: ["integer", "null"]

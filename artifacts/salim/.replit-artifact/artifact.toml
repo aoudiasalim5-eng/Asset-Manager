@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "S.A.L.I.M. Platform"
+version = "1.0.0"
+id = "artifacts/salim"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22760
+
+[services.development]
+run = "pnpm --filter @workspace/salim run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/salim", "run", "build" ]
+publicDir = "artifacts/salim/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22760"
+BASE_PATH = "/"
