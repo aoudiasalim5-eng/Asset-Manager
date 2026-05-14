@@ -132,18 +132,18 @@ export default function Onboarding() {
               <div className="space-y-5">
                 {[
                   {
-                    q: "1. Pourquoi veux-tu changer quelque chose dans ta vie en ce moment ?",
-                    placeholder: "Qu'est-ce qui t'a amené ici ? Quelle insatisfaction, quelle envie profonde ?",
+                    q: "1. What kind of life do you want to build?",
+                    placeholder: "Décris la vie que tu veux construire — pas ce que tu fuis, mais ce vers quoi tu tends.",
                     field: "q1",
                   },
                   {
-                    q: "2. Quelle contribution veux-tu apporter — à toi-même ou aux autres ?",
-                    placeholder: "Quel impact veux-tu avoir ? Sur ta famille, ton travail, le monde ?",
+                    q: "2. What really matters to you?",
+                    placeholder: "Tes valeurs profondes, tes priorités réelles. Ce pour quoi tu agirais même sans motivation.",
                     field: "q2",
                   },
                   {
-                    q: "3. Dans quelle direction va ta vie en ce moment ?",
-                    placeholder: "Es-tu sur la bonne voie ? Vers quoi veux-tu aller réellement ?",
+                    q: "3. What change do you want to create for yourself?",
+                    placeholder: "La transformation concrète que ce parcours S.A.L.I.M. doit produire.",
                     field: "q3",
                   },
                 ].map(({ q, placeholder, field }) => (
@@ -265,7 +265,7 @@ export default function Onboarding() {
                 <p className="text-sm font-medium text-primary uppercase tracking-wider mb-2">Étape 3 sur 3</p>
                 <h2 className="text-2xl font-serif font-bold mb-3">L'accord symbolique</h2>
                 <p className="text-muted-foreground">
-                  La méthode S.A.L.I.M. n'est pas un outil. C'est un engagement envers toi-même.
+                  Progress requires showing up, even when motivation fades.
                 </p>
               </div>
 
@@ -306,7 +306,7 @@ export default function Onboarding() {
                   data-testid="checkbox-agreement"
                 />
                 <span className="text-sm">
-                  I commit to showing up, even when motivation fades.
+                  I commit to taking responsibility for this goal.
                 </span>
               </label>
 

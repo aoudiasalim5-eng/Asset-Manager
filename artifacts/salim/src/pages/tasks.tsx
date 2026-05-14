@@ -83,6 +83,7 @@ export default function Tasks() {
         title,
         priority: isPriority ? "high" : "medium",
         scheduledDate: today,
+        description: estimatedTime || undefined,
       },
     });
   };
@@ -143,9 +144,16 @@ export default function Tasks() {
               </button>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-foreground text-base">{priorityTask.title}</p>
-                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                  <Star className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Priorité absolue aujourd'hui</span>
+                <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground flex-wrap">
+                  <span className="flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 text-amber-500" />
+                    Priorité absolue aujourd'hui
+                  </span>
+                  {priorityTask.description && (
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-200 rounded-full text-amber-700 text-xs font-medium">
+                      ⏱ {priorityTask.description}
+                    </span>
+                  )}
                 </div>
               </div>
               <button

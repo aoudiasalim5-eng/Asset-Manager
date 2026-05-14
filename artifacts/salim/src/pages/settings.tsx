@@ -185,6 +185,22 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Contact */}
+        <div className="bg-card border border-border rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="font-semibold text-sm">Aide & Contact</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            Une question sur la méthode S.A.L.I.M. ou sur l'application ?
+          </p>
+          <a
+            href="mailto:contact@salim-app.com"
+            className="text-sm text-primary hover:underline underline-offset-2"
+          >
+            contact@salim-app.com
+          </a>
+        </div>
+
         {/* Aide / Méthode SALIM */}
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           <button

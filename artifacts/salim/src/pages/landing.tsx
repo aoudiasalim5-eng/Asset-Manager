@@ -38,14 +38,13 @@ export default function Landing() {
           <p className="text-sm font-medium text-primary uppercase tracking-[0.2em] mb-6">
             Méthode de développement personnel
           </p>
-          <h1 className="text-5xl md:text-6xl font-serif font-bold text-foreground mb-8 leading-tight">
-            You don't need more motivation.
+          <h1 className="text-5xl md:text-6xl font-serif font-bold text-foreground mb-6 leading-tight">
+            From purpose to
             <br />
-            <span className="text-primary">You need clarity and discipline.</span>
+            <span className="text-primary">disciplined action.</span>
           </h1>
           <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-            S.A.L.I.M. est une méthode structurée pour atteindre un objectif à la fois, avec précision,
-            sens et discipline. Pas de gamification. Pas de comparaison. Juste toi et ton engagement.
+            A clear method to achieve one meaningful goal at a time.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
@@ -61,44 +60,48 @@ export default function Landing() {
             )}
           </div>
 
-          {/* Ethical message */}
-          <div className="flex items-center justify-center gap-2 mt-6 text-sm text-muted-foreground">
-            <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
-            <span>
-              Aucune fausse promesse. Aucun système de points. Aucune comparaison sociale.
-              Seulement un travail honnête sur toi-même.
-            </span>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
+              <span>Pas de gamification. Pas de comparaison sociale.</span>
+            </div>
+            <a href="#method" className="text-sm text-primary hover:underline underline-offset-2 transition-colors">
+              What is the SALIM method? ↓
+            </a>
           </div>
         </div>
 
         {/* SALIM method */}
-        <div className="w-full max-w-5xl mx-auto px-4 mb-20">
+        <div id="method" className="w-full max-w-5xl mx-auto px-4 mb-6">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-6">
+            One method. One goal. One path.
+          </p>
           <div className="grid md:grid-cols-5 gap-px bg-border rounded-2xl overflow-hidden border border-border">
             {[
               {
                 letter: "S",
                 title: "Specify",
-                desc: "Clarifie ton objectif avec une précision SMART. Pas de flou, pas d'ambiguïté.",
+                desc: "Specify your goal with SMART precision. No vagueness, no ambiguity.",
               },
               {
                 letter: "A",
                 title: "Align",
-                desc: "Connecte ton objectif à ta mission profonde et à tes valeurs. Donne-lui du sens.",
+                desc: "Align with your values and deeper purpose. Give your goal meaning.",
               },
               {
                 letter: "L",
                 title: "Lay out",
-                desc: "Structure un plan en 90 jours avec des jalons clairs et une priorité simple.",
+                desc: "Lay out your plan over 90 days with clear milestones and one priority.",
               },
               {
                 letter: "I",
                 title: "Implement",
-                desc: "Une action prioritaire par jour. Des revues hebdomadaires conscientes.",
+                desc: "Implement daily actions. One priority per day. Weekly conscious review.",
               },
               {
                 letter: "M",
                 title: "Maintain",
-                desc: "Suivi des habitudes clés. Constance sans perfectionnisme. Durée dans le temps.",
+                desc: "Maintain discipline over time. Consistency without perfectionism.",
               },
             ].map((step) => (
               <div key={step.letter} className="bg-card p-6 text-left">
