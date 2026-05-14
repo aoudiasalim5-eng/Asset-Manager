@@ -20,6 +20,7 @@ import Habits from "@/pages/habits";
 import Reviews from "@/pages/reviews";
 import Journal from "@/pages/journal";
 import Settings from "@/pages/settings";
+import Pricing from "@/pages/pricing";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +95,7 @@ function Router() {
       <Route path="/settings">
         <ProtectedRoute component={Settings} />
       </Route>
+      <Route path="/pricing" component={Pricing} />
       <Route component={NotFound} />
     </Switch>
   );

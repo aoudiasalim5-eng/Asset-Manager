@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { UpgradePrompt } from "@/components/upgrade-prompt";
 import {
   useListReviews,
   useCreateReview,
@@ -50,7 +52,9 @@ const REVIEW_STEPS = [
 type ReviewKey = typeof REVIEW_STEPS[number]["key"];
 
 export default function Reviews() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+
   const [creating, setCreating] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [form, setForm] = useState<Record<ReviewKey, string>>({
@@ -201,6 +205,15 @@ export default function Reviews() {
           )}
         </div>
       </AppLayout>
+    );
+  }
+
+  if (user?.plan === "free") {
+    return (
+      <UpgradePrompt
+        feature="Revue hebdomadaire"
+        description="Réfléchis chaque semaine à tes victoires, blocages et priorités. Disponible avec Premium."
+      />
     );
   }
 

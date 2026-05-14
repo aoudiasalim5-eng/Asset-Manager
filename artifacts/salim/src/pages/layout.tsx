@@ -13,11 +13,13 @@ import {
   getListObjectivesQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { UpgradePrompt } from "@/components/upgrade-prompt";
 import { ArrowRight, Plus, Trash2, CheckCircle2, Circle, Save, LayoutGrid } from "lucide-react";
 
 const MONTH_LABELS = ["Mois 1 (jours 1-30)", "Mois 2 (jours 31-60)", "Mois 3 (jours 61-90)"];
@@ -32,6 +34,7 @@ interface MilestoneForm {
 const EMPTY_FORM: MilestoneForm = { title: "", description: "", weekNumber: 1, targetDate: "" };
 
 export default function LayoutPage() {
+  const { user } = useAuth();
   const params = useParams<{ id: string }>();
   const objectiveId = parseInt(params.id, 10);
   const [, setLocation] = useLocation();
@@ -126,6 +129,15 @@ export default function LayoutPage() {
           {[1, 2, 3].map((i) => <div key={i} className="h-20 rounded-xl bg-muted animate-pulse" />)}
         </div>
       </AppLayout>
+    );
+  }
+
+  if (user?.plan === "free") {
+    return (
+      <UpgradePrompt
+        feature="L — Lay Out"
+        description="Construis un plan structuré en 90 jours avec des jalons par mois et une priorité de focus. Disponible avec Premium."
+      />
     );
   }
 

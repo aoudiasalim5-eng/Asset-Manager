@@ -7,13 +7,16 @@ import {
   getListObjectivesQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   CheckCircle2, Circle, ChevronRight, Plus, ArrowRight, Lock,
-  Zap, Repeat, AlertCircle,
+  Zap, Repeat, AlertCircle, Sparkles,
 } from "lucide-react";
+
+const PREMIUM_STEP_KEYS = new Set(["layout", "implement", "maintain"]);
 
 const STEPS = [
   {
@@ -80,6 +83,9 @@ export default function ObjectivePage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [advancing, setAdvancing] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const isFree = user?.plan === "free";
 
   const { data: objective, isLoading } = useGetActiveObjective({
     query: { queryKey: getGetActiveObjectiveQueryKey() },
@@ -225,48 +231,60 @@ export default function ObjectivePage() {
 
                   {/* Actions */}
                   <div className="flex-shrink-0 flex items-center gap-2">
-                    {/* Navigate to the step tool */}
-                    {route && (isCurrent || completed) && (
-                      <Link href={route}>
-                        <Button
-                          size="sm"
-                          variant={isCurrent && !step.actionable ? "default" : "outline"}
-                          data-testid={`button-step-${step.key}`}
-                        >
-                          {step.key === "implement" ? (
-                            <><Zap className="w-3.5 h-3.5 mr-1" />Actions</>
-                          ) : step.key === "maintain" ? (
-                            <><Repeat className="w-3.5 h-3.5 mr-1" />Habitudes</>
-                          ) : completed ? (
-                            <>Revoir<ChevronRight className="w-4 h-4 ml-1" /></>
-                          ) : (
-                            <>Continuer<ChevronRight className="w-4 h-4 ml-1" /></>
-                          )}
+                    {/* Premium lock for free users on L/I/M */}
+                    {isFree && PREMIUM_STEP_KEYS.has(step.linkedTo) && !completed ? (
+                      <Link href="/pricing">
+                        <Button size="sm" variant="outline" className="border-primary/40 text-primary gap-1" data-testid={`button-upgrade-${step.key}`}>
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Premium
                         </Button>
                       </Link>
-                    )}
+                    ) : (
+                      <>
+                        {/* Navigate to the step */}
+                        {route && (isCurrent || completed) && (
+                          <Link href={route}>
+                            <Button
+                              size="sm"
+                              variant={isCurrent && !step.actionable ? "default" : "outline"}
+                              data-testid={`button-step-${step.key}`}
+                            >
+                              {step.key === "implement" ? (
+                                <><Zap className="w-3.5 h-3.5 mr-1" />Actions</>
+                              ) : step.key === "maintain" ? (
+                                <><Repeat className="w-3.5 h-3.5 mr-1" />Habitudes</>
+                              ) : completed ? (
+                                <>Revoir<ChevronRight className="w-4 h-4 ml-1" /></>
+                              ) : (
+                                <>Continuer<ChevronRight className="w-4 h-4 ml-1" /></>
+                              )}
+                            </Button>
+                          </Link>
+                        )}
 
-                    {/* Advance button for implement/maintain */}
-                    {step.actionable && isCurrent && !completed && (
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setAdvancing(step.key);
-                          advanceMutation.mutate({
-                            id: objective.id,
-                            step: step.key as "implement" | "maintain",
-                          });
-                        }}
-                        disabled={advanceMutation.isPending && advancing === step.key}
-                        data-testid={`button-advance-${step.key}`}
-                      >
-                        {advanceMutation.isPending && advancing === step.key
-                          ? "..."
-                          : step.key === "maintain"
-                          ? "Terminer le parcours"
-                          : "Valider cette étape"}
-                        <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
+                        {/* Advance button for implement/maintain */}
+                        {step.actionable && isCurrent && !completed && (
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setAdvancing(step.key);
+                              advanceMutation.mutate({
+                                id: objective.id,
+                                step: step.key as "implement" | "maintain",
+                              });
+                            }}
+                            disabled={advanceMutation.isPending && advancing === step.key}
+                            data-testid={`button-advance-${step.key}`}
+                          >
+                            {advanceMutation.isPending && advancing === step.key
+                              ? "..."
+                              : step.key === "maintain"
+                              ? "Terminer le parcours"
+                              : "Valider cette étape"}
+                            <ChevronRight className="w-4 h-4 ml-1" />
+                          </Button>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

@@ -7,7 +7,9 @@ import {
   getListHabitsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/layout";
+import { UpgradePrompt } from "@/components/upgrade-prompt";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +21,9 @@ import { type HabitInputFrequency } from "@workspace/api-client-react";
 const today = new Date().toISOString().split("T")[0];
 
 export default function Habits() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [frequency, setFrequency] = useState<HabitInputFrequency>("daily");
@@ -57,6 +61,15 @@ export default function Habits() {
 
   const maxStreak = habits.reduce((max, h) => Math.max(max, h.currentStreak ?? 0), 0);
   const totalCompletions = habits.reduce((sum, h) => sum + (h.totalCompletions ?? 0), 0);
+
+  if (user?.plan === "free") {
+    return (
+      <UpgradePrompt
+        feature="M — Maintain · Habitudes"
+        description="Suis tes habitudes clés et mesure ta constance dans la durée. Disponible avec Premium."
+      />
+    );
+  }
 
   return (
     <AppLayout>

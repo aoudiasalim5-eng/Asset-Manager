@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { UpgradePrompt } from "@/components/upgrade-prompt";
 import {
   useListJournalEntries,
   useCreateJournalEntry,
@@ -23,7 +25,9 @@ const MOOD_LABELS = ["", "Difficile", "En dessous", "Neutre", "Bien", "En pleine
 const MOOD_COLORS = ["", "text-red-500", "text-orange-500", "text-amber-500", "text-green-500", "text-emerald-500"];
 
 export default function Journal() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+
   const [writing, setWriting] = useState(false);
   const [content, setContent] = useState("");
   const [mood, setMood] = useState(3);
@@ -138,6 +142,15 @@ export default function Journal() {
           </form>
         </div>
       </AppLayout>
+    );
+  }
+
+  if (user?.plan === "free") {
+    return (
+      <UpgradePrompt
+        feature="Journal personnel"
+        description="Exprime tes pensées librement avec des suggestions de réflexion guidée et un historique complet. Disponible avec Premium."
+      />
     );
   }
 

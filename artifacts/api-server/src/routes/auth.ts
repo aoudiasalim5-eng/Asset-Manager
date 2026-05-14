@@ -91,4 +91,13 @@ router.patch("/users/profile", requireAuth, async (req, res): Promise<void> => {
   res.json(toUserResponse(user));
 });
 
+router.post("/auth/upgrade", requireAuth, async (req, res): Promise<void> => {
+  const [user] = await db
+    .update(usersTable)
+    .set({ plan: "premium" })
+    .where(eq(usersTable.id, req.auth!.userId))
+    .returning();
+  res.json(toUserResponse(user));
+});
+
 export default router;
