@@ -83,12 +83,13 @@ export default function Onboarding() {
                   Bienvenue{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
                 </h1>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Tu es ici pour une raison. Pas juste t'inscrire — mais t'engager.
+                  S.A.L.I.M. n'est pas une app de productivité. C'est un chemin structuré
+                  de l'intention à l'action — 3 à 5 minutes par jour, sans surcharge.
                 </p>
               </div>
 
               <div className="bg-card border border-border rounded-xl p-6 text-left space-y-4">
-                <p className="font-serif font-semibold text-foreground">La méthode S.A.L.I.M. repose sur un principe :</p>
+                <p className="font-serif font-semibold text-foreground">5 étapes, dans l'ordre :</p>
                 <div className="space-y-3">
                   {[
                     { letter: "S", text: "Specify — Clarifie ton objectif avec précision" },

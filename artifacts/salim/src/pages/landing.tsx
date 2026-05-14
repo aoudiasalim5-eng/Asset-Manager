@@ -130,11 +130,32 @@ export default function Landing() {
           </div>
         </div>
 
+        {/* Positioning statement */}
+        <div className="max-w-2xl mx-auto mb-16 px-4 text-center">
+          <blockquote className="border-l-4 border-primary pl-6 text-left">
+            <p className="font-serif text-xl text-foreground font-semibold leading-snug italic">
+              "SALIM is not a productivity app.<br />
+              It is a disciplined path from purpose to action."
+            </p>
+          </blockquote>
+        </div>
+
+        {/* Daily time commitment */}
+        <div className="max-w-2xl mx-auto mb-16 px-4">
+          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8 text-center">
+            <p className="text-4xl font-serif font-bold text-primary mb-2">3–5 min</p>
+            <p className="text-foreground font-medium mb-2">par jour</p>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              Une seule action prioritaire. Aucune surcharge cognitive. L'app s'efface pour te laisser agir.
+            </p>
+          </div>
+        </div>
+
         {/* Final CTA */}
         <div className="max-w-lg mx-auto text-center mb-24 px-4">
           <p className="text-muted-foreground mb-6 text-base">
-            Ce n'est pas une app de plus. C'est un engagement. Si tu es prêt à travailler sérieusement
-            sur toi-même, S.A.L.I.M. est fait pour toi.
+            L'objectif ultime de S.A.L.I.M. n'est pas de te rendre dépendant d'une app —
+            c'est de t'aider à devenir quelqu'un qui agit par discipline, et non par motivation.
           </p>
           <Button size="lg" className="w-full sm:w-auto px-10 h-12 text-base" asChild>
             <Link href={isAuthenticated ? "/objective" : "/register"}>
