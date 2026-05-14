@@ -42,15 +42,8 @@ const REVIEW_STEPS = [
     key: "learnings",
     label: "Ce que j'ajuste",
     question: "Qu'est-ce que j'ajuste pour la semaine prochaine ?",
-    placeholder: "Une décision concrète. Un changement d'approche. Une habitude à modifier.",
+    placeholder: "Une décision concrète. Un changement d'approche. Une action à modifier.",
     hint: "L'ajustement conscient est le cœur de la méthode S.A.L.I.M.",
-  },
-  {
-    key: "nextWeekFocus",
-    label: "Focus semaine prochaine",
-    question: "Quelle est ma priorité absolue la semaine prochaine ?",
-    placeholder: "Une seule chose. Celle qui fera vraiment avancer ton objectif.",
-    hint: "La clarté sur la prochaine semaine est la meilleure fin de revue.",
   },
 ] as const;
 
@@ -64,7 +57,6 @@ export default function Reviews() {
     wins: "",
     challenges: "",
     learnings: "",
-    nextWeekFocus: "",
   });
 
   const now = new Date();
@@ -76,7 +68,7 @@ export default function Reviews() {
         queryClient.invalidateQueries({ queryKey: getListReviewsQueryKey() });
         setCreating(false);
         setCurrentStep(0);
-        setForm({ wins: "", challenges: "", learnings: "", nextWeekFocus: "" });
+        setForm({ wins: "", challenges: "", learnings: "" });
       },
     },
   });
@@ -89,7 +81,6 @@ export default function Reviews() {
         wins: form.wins,
         challenges: form.challenges,
         learnings: form.learnings,
-        nextWeekFocus: form.nextWeekFocus,
         energyScore: 7,
         progressScore: 7,
       },
@@ -198,7 +189,7 @@ export default function Reviews() {
           {isLast && (
             <div className="mt-5 bg-muted/30 border border-border rounded-xl p-4 space-y-3">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Résumé de ta revue</p>
-              {REVIEW_STEPS.slice(0, 3).map((s) => (
+              {REVIEW_STEPS.map((s) => (
                 form[s.key] ? (
                   <div key={s.key}>
                     <p className="text-xs font-medium text-muted-foreground mb-0.5">{s.label}</p>

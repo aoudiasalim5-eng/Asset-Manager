@@ -22,7 +22,7 @@ export default function Onboarding() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [step, setStep] = useState<Step>("welcome");
-  const [mission, setMission] = useState("");
+  const [mission, setMission] = useState<string | Record<string, string>>({});
   const [objectiveTitle, setObjectiveTitle] = useState("");
   const [objectiveDescription, setObjectiveDescription] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -44,8 +44,11 @@ export default function Onboarding() {
   });
 
   const handleMissionNext = async () => {
-    if (mission.trim()) {
-      await profileMutation.mutateAsync({ data: { mission } });
+    const mObj = typeof mission === "object" ? (mission as any) : {};
+    const parts = [mObj.q1, mObj.q2, mObj.q3].filter(Boolean);
+    if (parts.length > 0) {
+      const combined = parts.join("\n\n");
+      await profileMutation.mutateAsync({ data: { mission: combined } });
     }
     setStep("objective");
   };
@@ -114,39 +117,57 @@ export default function Onboarding() {
             </div>
           )}
 
-          {/* STEP 2: Mission */}
+          {/* STEP 2: Mission — 3 guided questions */}
           {step === "mission" && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div>
                 <p className="text-sm font-medium text-primary uppercase tracking-wider mb-2">Étape 1 sur 3</p>
-                <h2 className="text-2xl font-serif font-bold mb-3">Ta mission personnelle</h2>
-                <p className="text-muted-foreground">
-                  Avant de définir un objectif, il faut savoir pourquoi tu existes. Ta mission est ta boussole.
-                  Elle n'a pas besoin d'être parfaite — juste honnête.
+                <h2 className="text-2xl font-serif font-bold mb-2">Clarifie ta mission</h2>
+                <p className="text-muted-foreground text-sm">
+                  3 questions. Prends le temps d'y répondre honnêtement — pas parfaitement.
                 </p>
               </div>
 
-              <div className="bg-card border border-border rounded-xl p-5">
-                <p className="text-sm font-medium mb-1">Exemples de missions :</p>
-                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                  <li>Devenir une version de moi que mes enfants admirent</li>
-                  <li>Créer un impact durable dans mon secteur</li>
-                  <li>Vivre avec liberté, santé et présence totale</li>
-                </ul>
+              <div className="space-y-5">
+                {[
+                  {
+                    q: "1. Pourquoi veux-tu changer quelque chose dans ta vie en ce moment ?",
+                    placeholder: "Qu'est-ce qui t'a amené ici ? Quelle insatisfaction, quelle envie profonde ?",
+                    field: "q1",
+                  },
+                  {
+                    q: "2. Quelle contribution veux-tu apporter — à toi-même ou aux autres ?",
+                    placeholder: "Quel impact veux-tu avoir ? Sur ta famille, ton travail, le monde ?",
+                    field: "q2",
+                  },
+                  {
+                    q: "3. Dans quelle direction va ta vie en ce moment ?",
+                    placeholder: "Es-tu sur la bonne voie ? Vers quoi veux-tu aller réellement ?",
+                    field: "q3",
+                  },
+                ].map(({ q, placeholder, field }) => (
+                  <div key={field} className="space-y-1.5">
+                    <label className="text-sm font-medium text-foreground">{q}</label>
+                    <Textarea
+                      value={(mission as any)[field] ?? ""}
+                      onChange={(e) =>
+                        setMission((prev) => {
+                          const obj = typeof prev === "string" ? {} : (prev as any);
+                          return { ...obj, [field]: e.target.value } as any;
+                        })
+                      }
+                      placeholder={placeholder}
+                      rows={2}
+                      className="resize-none"
+                      data-testid={`textarea-mission-${field}`}
+                    />
+                  </div>
+                ))}
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Ma mission personnelle</label>
-                <Textarea
-                  value={mission}
-                  onChange={(e) => setMission(e.target.value)}
-                  placeholder="En quoi je crois profondément ? Quel impact je veux avoir ?"
-                  rows={4}
-                  className="resize-none"
-                  data-testid="textarea-mission"
-                />
-                <p className="text-xs text-muted-foreground">Tu pourras la modifier plus tard dans les paramètres.</p>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Ces réponses seront synthétisées en ta mission personnelle. Tu pourras la modifier dans les paramètres.
+              </p>
 
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setStep("welcome")} className="flex-1">
